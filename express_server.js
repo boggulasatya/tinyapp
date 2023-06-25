@@ -20,6 +20,12 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
+
+//Adding a GET Route to show the form
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
+
 //Single URL & shortened form
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
