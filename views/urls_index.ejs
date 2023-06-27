@@ -13,6 +13,13 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
+    <style>
+      .custom-delete-button {
+        color:#dc3545;
+        background-color: #fff;
+        border: 1px solid#dc3545;
+      }
+    </style>
     <title>TinyApp</title> 
   </head>
   <body>
@@ -31,6 +38,11 @@
             <tr>
               <td><%= id %></td>
               <td><%= urls[id] %></td>
+              <td>
+                <form method ="POST" action="/urls/<%= id %>/delete">
+                  <button type="submit" class="btn custom-delete-button">Delete</button>
+                </form>
+              </td>
             </tr>
           <% } %>
         </tbody>
