@@ -67,6 +67,19 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
+//Updating url
+app.get('/urls/:id/edit', (req, res) => {
+  const id = req.params.id;
+  const longURL = urlDatabase[id];
+  res.render('edit', { id: id, longURL: longURL});
+});
+
+app.post("/urls/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const newLongURL = req.body.longURL;
+  urlDatabase[shortURL] = newLongURL;
+  res.redirect("/urls");
+});
 
 //POST route to delete a URL resource
 app.post("/urls/:id/delete", (req, res) => {
