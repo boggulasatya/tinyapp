@@ -39,7 +39,10 @@
               <td><%= id %></td>
               <td><%= urls[id] %></td>
               <td>
-                <form method ="POST" action="/urls/<%= id %>/delete">
+                <div class="btn-group" role="group"></div>
+                <a href="/urls/<%= id %>/edit" class="btn custom-edit-button" style="background-color: white; border: 1px solid blue; color: blue;">Edit</a>
+                <span style="margin-left: 50px;"></span> <!-- Add spacing between the buttons-->
+                <form method ="POST" action="/urls/<%= id %>/delete" style="display: inline;">
                   <button type="submit" class="btn custom-delete-button">Delete</button>
                 </form>
               </td>
