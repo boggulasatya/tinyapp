@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit URL</title>
+</head>
+<body>
+  <h1>Edit URL</h1>
+
+  <form action="/urls/<%= id %>" method="POST">
+    <label for="longURL">New URL:</label>
+    <input type="text" name="longURL" value="<%= longURL %>">
+    <button type="submit">Update</button>
+  </form>
+</body>
+</html>
+
