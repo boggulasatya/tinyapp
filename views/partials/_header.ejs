@@ -1,6 +1,7 @@
 <header>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
     <a class="navbar-brand" href="/urls">TinyApp</a>
+   
     <button
       class="navbar-toggler"
       type="button"
@@ -16,7 +17,14 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+          <div class="form-group mx-sm-3">
+            <input type="text" class="form-control" name="username" placeholder=" Username">
+          </div>
+          <a href ="/login">Login</a>
+        <form action="login" method="POST" class="form-inline">
+        </form>
       </div>
     </div>
   </nav>
+  
 </header>
