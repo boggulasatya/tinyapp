@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 3000; // default port 8080
 //Set ejs as the view engine
 app.set("view engine", "ejs");
+const bodyParser = require('body-parser');
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -13,7 +16,6 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.use(express.urlencoded({ extended: true }));
 
 //Adding Routes
 app.get("/urls.json", (req, res) => {
@@ -73,6 +75,12 @@ app.get('/urls/:id/edit', (req, res) => {
   const longURL = urlDatabase[id];
   res.render('edit', { id: id, longURL: longURL});
 });
+//Login
+app.get('/login', (req, res) => {
+  const { username } = req.body;
+  res.cookie('username', username);
+  res.redirect('/urls');
+});
 
 app.post("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
@@ -86,6 +94,26 @@ app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
   delete urlDatabase[shortURL];
   res.redirect("/urls");
+});
+
+const users = [
+  {id: '1', username: 'satya', password: 'password1'}
+];
+function isValidLogin(username, password) {
+  const user = users.find(user => user.username === username);
+  if (user && user.password === password) {
+    return true;
+  }
+  return false;
+}
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+ 
+  if (isValidLogin(username, password)) {
+    res.redirect('/urls');
+  } else {
+    res.send('Invaild username or password');
+  }
 });
 
 //Sending HTML
