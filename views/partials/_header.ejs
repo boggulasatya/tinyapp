@@ -21,12 +21,14 @@
         <div class="form-group mx-sm-3">
           <span class="navbar-text">Logged in as <%= username %></span>
            </div>
-           <a href="/logout">Logout</a>
-           <% } else { %>
-            <form action="/login" method="POST" class="form-inline">  
-          <input type="text" class="form-control" name="username" placeholder=" Username">
-          <button type="submit" class="btn btn-link">Login</button>
-        </form>
+           <form action="/logout" method="POST" class="form-inline">
+            <button type="submit" class="btn btn-link">Logout</button>
+          </form>
+        <% } else { %>
+          <form action="/login" method="POST" class="form-inline">  
+            <input type="text" class="form-control" name="username" placeholder="Username">
+            <button type="submit" class="btn btn-link">Login</button>
+          </form>
           <% } %>
       </div>
     </div>
