@@ -114,7 +114,7 @@ app.post('/login', (req, res) => {
     res.send('Invaild username or password');
   }
 });
-//Logout Client & Server logic
+//Logout
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
