@@ -31,41 +31,24 @@
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL</th>
+            <th scope="col" style="text-align: left;"></th>
+            <th scope="col" style="text-align: left; margin-left: 5px;">Edit</
+            <th scope="col" style="text-align: left;"></th>
+            <th scope="col" style="text-align: left; margin-left: 5px;">Delete</th>
+
           </tr>
         </thead>
-        <tbody>
-          <% for (let id in urls) { %>
-            <tr>
-              <td><%= id %></td>
-              <td><%= urls[id] %></td>
-              <td>
-                <div class="btn-group" role="group"></div>
-                <a href="/urls/<%= id %>/edit" class="btn custom-edit-button" style="background-color: white; border: 1px solid blue; color: blue;">Edit</a>
-                <span style="margin-left: 50px;"></span> <!-- Add spacing between the buttons-->
-                <form method ="POST" action="/urls/<%= id %>/delete" style="display: inline;">
-                  <button type="submit" class="btn custom-delete-button">Delete</button>
-                </form>
-              </td>
+          <tbody>
+            <% for (let id in urls) { %>
+              <tr>
+                <td><%= id %></td>
+                <td><%= urls[id] %></td>
+              <td><%= urls[id].longURL %></td>
+              <td class="margin-left: 50px;"><form method="GET" action="/urls/<%= id %>"><button>Edit</button></form></td>
+      <td><form method="POST" action="/urls/<%= id %>/delete"><button>Delete</button></form></td>
             </tr>
-          <% } %>
-        </tbody>
+            <% } %>
+          </tbody>
       </table>
     </main>
-    <!-- Bootstrap JS -->
-    <script
-      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-      crossorigin="anonymous"
-    ></script>
-  </body>
-</html>
+    
