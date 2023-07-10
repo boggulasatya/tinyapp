@@ -19,6 +19,7 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         </div>
         <% if (!user) { %>
+          <div>
           <div class="navbar-nav ml-auto">
             <div class="nav-item">
               <a class="nav-link" href="/login">Login</a>
@@ -26,7 +27,6 @@
             <div class="nav-item">
               <a class="nav-link" href="/register">Register</a>
             </div>
-          </div>
             <% } else { %>
               <div class="navbar-nav ml-auto">
             <span class="navbar-text">Logged in as <%= user.email %></span>
