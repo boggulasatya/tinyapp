@@ -70,23 +70,34 @@ app.get("/urls", (req, res) => {
     const templateVars = { urls: userURLs, user};
     res.render("urls_index", templateVars);
   } else {
-    const templateVars = { message: "You need to be logged in to view URLs." };
-    res.render("login", templateVars);
+    res.send("Please login to continue");
   }
 });
 
 //Adding a POST Route to Receive the Form Submission
 app.post("/urls", (req, res) => {
-  if (req.session.userId) {
-    const shortURL = generateRandomString();
-    urlDatabase[shortURL] = { longURL: req.body.longURL,
-      userID: req.session.userId };
+  const userId = req.session.userId;
+  const longURL = req.body.longURL;
 
-    res.redirect(`/urls/${shortURL}`);
-  } else {
-    res.status(401).send("You need to be logged into view URL");
+  if (!userId) {
+    res.status(401).send("You need to be logged in to view URLs.");
+    return;
   }
+
+  if (!longURL) {
+    res.status(400).send("Long URL is required.");
+    return;
+  }
+
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: userId
+  };
+
+  res.redirect(`/urls/${shortURL}`);
 });
+
 
 //Adding a GET Route to show the form
 app.get("/urls/new", (req, res) => {
@@ -134,11 +145,11 @@ app.get('/urls/:id/edit', (req, res) => {
 //Login
 app.get('/login', (req, res) => {
   const user = users.find(user => user.id === req.session.userId);
-  const templateVars = { user };
-  
+
   if (user) {
     res.redirect('/urls');
   } else {
+    const templateVars = { user };
     res.render('login', templateVars);
   }
 });
@@ -240,18 +251,11 @@ app.post('/urls/:id/update', (req, res) => {
     return;
   }
 
-  const templateVars = {
-    user,
-    id: urlId,
-    longURL: url.longURL
-  };
-
   if (req.body.longURL) {
-    templateVars["longURL"] = req.body.longURL;
     urlDatabase[urlId].longURL = req.body.longURL;
   }
 
-  res.render("urls_show", templateVars);
+  res.redirect('/urls');
 });
 
 
