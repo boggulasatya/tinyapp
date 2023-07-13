@@ -46,58 +46,15 @@ app.get("/", (req, res) => {
   }
 });
 
+//Sending HTML
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
 
 //Adding Routes
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-
-app.get("/u/:id", (req, res) => {
-  const shortURL = req.params.id;
-  const url = urlDatabase[shortURL];
-
-  if (url) {
-    res.redirect(url.longURL);
-  } else {
-    return res.status(404).send("URL not found");
-  }
-});
-
-app.get("/urls", (req, res) => {
-  const user = users.find((user) => user.id === req.session.userId);
-  if (user) {
-    const userURLs = urlsForUser(user.id, urlDatabase);
-    const templateVars = { urls: userURLs, user};
-    res.render("urls_index", templateVars);
-  } else {
-    res.send("Please login to continue");
-  }
-});
-
-//Adding a POST Route to Receive the Form Submission
-app.post("/urls", (req, res) => {
-  const userId = req.session.userId;
-  const longURL = req.body.longURL;
-
-  if (!userId) {
-    res.status(401).send("You need to be logged in to view URLs.");
-    return;
-  }
-
-  if (!longURL) {
-    res.status(400).send("Long URL is required.");
-    return;
-  }
-
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = {
-    longURL: longURL,
-    userID: userId
-  };
-
-  res.redirect(`/urls/${shortURL}`);
-});
-
 
 //Adding a GET Route to show the form
 app.get("/urls/new", (req, res) => {
@@ -125,32 +82,30 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-//Updating url
-app.get('/urls/:id/edit', (req, res) => {
-  const urlId = req.params.id;
-  const url = urlDatabase[urlId];
+
+app.get("/urls", (req, res) => {
   const user = users.find((user) => user.id === req.session.userId);
-  if (!url) {
-    res.status(404).send('<h2>This URL does not exist.</h2>');
-    return;
-  }  if (url.userID !== req.session.userId) {
-    res.status(403).send('<h2>This URL does not belong to you.</h2>');
-   
+  if (user) {
+    const userURLs = urlsForUser(user.id, urlDatabase);
+    const templateVars = { urls: userURLs, user};
+    res.render("urls_index", templateVars);
   } else {
-    const templateVars = { url, user };
-    res.render('urls_edit', templateVars);
+    const bodyHTML = `
+    <h2>Please Login or Register to continue.</h1>
+    <a href="/login">Login</a> | <a href="/register">Register</a>`;
+   
+    res.send(bodyHTML);
   }
 });
 
-//Login
-app.get('/login', (req, res) => {
-  const user = users.find(user => user.id === req.session.userId);
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const url = urlDatabase[shortURL];
 
-  if (user) {
-    res.redirect('/urls');
+  if (url) {
+    res.redirect(url.longURL);
   } else {
-    const templateVars = { user };
-    res.render('login', templateVars);
+    return res.status(404).send("URL not found");
   }
 });
 
@@ -165,43 +120,17 @@ app.get("/register", (req, res) => {
   }
 });
 
-app.post("/register", (req, res) => {
-  const { email, password } = req.body;
-  
-  if (!email || !password) {
-    return res.status(400).send("Email and password are required");
-  }
-  const foundUser = getUserByEmail(email, users);
-  if (foundUser) {
-    return res.status(400).send("Email already registered");
-  }
-  //create a new user object
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  const newUser = {
-    id: generateRandomString(),
-    email: email,
-    password: hashedPassword,
-  };
-  users.push(newUser);
-  //Set user_id cookie and redirect to URLs page
-  req.session.userId = newUser.id;
-  res.redirect('/urls');
-});
+//Login
+app.get('/login', (req, res) => {
+  const user = users.find(user => user.id === req.session.userId);
 
-app.post("/urls/:id", (req, res) => {
-  const userId = req.session.userId;
-  const urlId = req.params.id;
-  const url = urlDatabase[urlId];
-  if (!url) {
-    return res.status(404).send("URL not found");
+  if (user) {
+    res.redirect('/urls');
+  } else {
+    const templateVars = { user };
+    res.render('login', templateVars);
   }
-  if (url.userID !== userId) {
-    return res.status(403).send("You don't have permission to edit this URL");
-  }
-  urlDatabase[urlId].longURL = req.body.longURL;
-  res.redirect("/urls");
 });
-
 
 //POST route to delete a URL resource
 app.post("/urls/:id/delete", (req, res) => {
@@ -219,20 +148,20 @@ app.post("/urls/:id/delete", (req, res) => {
     res.redirect("/urls");
   }
 });
-app.post('/login', (req, res) => {
-  const { email, password } = req.body;
-  const foundUser = getUserByEmail(email, users);
-  // Find the user with the provided email
-  if (!foundUser) {
-    return res.status(403).send("User not found");
+
+
+app.post("/urls/:id", (req, res) => {
+  const userId = req.session.userId;
+  const urlId = req.params.id;
+  const url = urlDatabase[urlId];
+  if (!url) {
+    return res.status(404).send("URL not found");
   }
-  // Check if the user exists and the password is correct
-  if (bcrypt.compareSync(password, foundUser.password)) {
-    //store the user's ID in the session
-    req.session.userId = foundUser.id;
-    res.redirect("/urls");
+  if (url.userID !== userId) {
+    return res.status(403).send("You don't have permission to edit this URL");
   } else {
-    return res.status(403).send("Incorrect password");
+    urlDatabase[urlId].longURL = req.body.longURL;
+    res.redirect('/urls');
   }
 });
 
@@ -259,15 +188,76 @@ app.post('/urls/:id/update', (req, res) => {
 });
 
 
+
+//Adding a POST Route to Receive the Form Submission
+app.post("/urls", (req, res) => {
+  const userId = req.session.userId;
+  const longURL = req.body.longURL;
+
+  if (!userId) {
+    res.status(401).send("You need to be logged in to view URLs.");
+    return;
+  }
+  console.log("before longurl check");
+  if (longURL === '') {
+    res.status(400).send("Long URL is required.");
+  } else {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = {
+      longURL: longURL,
+      userID: userId
+    };
+
+    res.redirect(`/urls`);
+  }
+});
+
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  const foundUser = getUserByEmail(email, users);
+  // Find the user with the provided email
+  if (!foundUser) {
+    return res.status(403).send("Email and password are required");
+  }
+
+  // Check if the user exists and the password is correct
+  if (bcrypt.compareSync(password, foundUser.password)) {
+    //store the user's ID in the session
+    req.session.userId = foundUser.id;
+    res.redirect("/urls");
+  } else {
+    return res.status(403).send("Incorrect password");
+  }
+});
+
 //Logout
 app.post('/logout', (req, res) => {
   req.session = null;
   res.redirect('/login');
 });
 
-//Sending HTML
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+app.post("/register", (req, res) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required");
+  }
+  const foundUser = getUserByEmail(email, users);
+  if (foundUser) {
+    return res.status(400).send("Email already registered");
+  }
+  //create a new user object
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  const newUser = {
+    id: generateRandomString(),
+    email: email,
+    password: hashedPassword,
+  };
+  users.push(newUser);
+  //Set user_id cookie and redirect to URLs page
+  req.session.userId = newUser.id;
+  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
