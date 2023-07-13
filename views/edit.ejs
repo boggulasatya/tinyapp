@@ -9,7 +9,7 @@
   <h1>Edit URL</h1>
   <form action="/urls/<%= urlId %>" method="POST">
     <label for="longURL">New URL:</label>
-    <input type="text" name="longURL" value="<%= url.longURL %>">
+    <input type="text" name="longURL"required value="<%= url.longURL %>">
     <button type="submit">Update</button>
   </form>
 </body>
